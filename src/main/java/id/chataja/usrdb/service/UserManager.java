@@ -12,6 +12,7 @@ import id.chataja.usrdb.model.SimpleUser;
 import id.chataja.usrdb.model.domain.User;
 import java.time.LocalDateTime;
 import javax.validation.Valid;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ public class UserManager {
     
     private static final String INSERT_USER_ROLES_SQL = "insert into user_roles(user_id,role_id,created_at,updated_at) values(%d,%d,now(),now())";
     private static final String INSERT_USER_PARTNER_SQL = "insert into public.user_partner_embed_chats(user_id,partner_embed_id,created_at,updated_at) values(%d,%d,now(),now())";
+    
+    @Autowired
+    private Logger logger;
     
     @Autowired
     private JdbcTemplate jdbc;

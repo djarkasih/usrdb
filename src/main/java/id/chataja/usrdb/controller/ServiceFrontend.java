@@ -81,7 +81,11 @@ public class ServiceFrontend {
             status = HttpStatus.CREATED;
         
         SimpleUser out = userMgr.save(inp);
-
+        if (out == null) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            item.setSuccess(false);
+        }
+        
         item.setCode(status.value());
         item.setPayload(out);
                 

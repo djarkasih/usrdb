@@ -77,7 +77,7 @@ public class ManagerApplication {
             
             Set<String> profs = Set.of(env.getActiveProfiles());            
             logger.info("Active profiles = " + profs.toString());
-            
+                
             this.createUmeetMePartnerRec(this.partnerRecord);
             logger.info("partner record : " + this.partnerRecord);
 
