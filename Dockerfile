@@ -3,16 +3,15 @@
 # and open the template in the editor.
 FROM adoptopenjdk/openjdk13:alpine-jre
 
-ARG JAR_FILE=target/*.jar
-ARG APP_PORT="8080"
-
 ENV JDBC_DATABASE="caudb" \
     JDBC_HOST="pgsqldb" \
     JDBC_PORT="5432" \
     JDBC_USER="causradm" \
     JDBC_PASSWORD="c4usr4dmK3y"
-
 ENV JDBC_URL="jdbc:postgresql://${JDBC_HOST}:${JDBC_PORT}/${JDBC_DATABASE}"
+
+ARG JAR_FILE=target/*.jar
+ARG APP_PORT="8080"
 
 COPY ${JAR_FILE} app.jar
 
