@@ -12,42 +12,42 @@ package id.chataja.usrdb.model;
 public class PartnerRecord {
     
     private int id;
+    private final String name;
     private final String email;
-    private final String defaultPassword;
     private String password;
 
-    public PartnerRecord(String email, String defaultPassword) {
+    public PartnerRecord(String name, String email) {
+        this.name = name;
         this.email = email;
-        this.defaultPassword = defaultPassword;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public String getDefaultPassword() {
-        return defaultPassword;
+    public String getPassword() {
+        return password;
     }
 
     @Override
     public String toString() {
-        return "PartnerRecord{" + "id=" + id + ", email=" + email + ", defaultPassword=" + defaultPassword + ", password=" + password + '}';
+        return "PartnerRecord{" + "id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + '}';
     }
-    
+
 }

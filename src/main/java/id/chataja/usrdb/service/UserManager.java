@@ -6,7 +6,7 @@
 package id.chataja.usrdb.service;
 
 import id.chataja.usrdb.jpa.UserRepository;
-import id.chataja.usrdb.model.PartnerRecord;
+import id.chataja.usrdb.model.PartnerApp;
 import id.chataja.usrdb.model.Rules;
 import id.chataja.usrdb.model.SimpleUser;
 import id.chataja.usrdb.model.domain.User;
@@ -27,7 +27,7 @@ import org.springframework.validation.annotation.Validated;
 public class UserManager {
     
     private static final String INSERT_USER_ROLES_SQL = "insert into user_roles(user_id,role_id,created_at,updated_at) values(%d,%d,now(),now())";
-    private static final String INSERT_USER_PARTNER_SQL = "insert into public.user_partner_embed_chats(user_id,partner_embed_id,created_at,updated_at) values(%d,%d,now(),now())";
+    private static final String INSERT_USER_EMBED_SQL = "insert into user_embed_chats(user_id,embed_app_id,created_at,updated_at) values(%d,%d,now(),now())";
     
     @Autowired
     private Logger logger;
@@ -39,7 +39,7 @@ public class UserManager {
     private UserRepository userRepo;
 
     @Autowired
-    private PartnerRecord partnerRecord;
+    private PartnerApp partnerApp;
     
     public boolean existsByMobileNumber(String mobileNumber) {
         
@@ -108,7 +108,7 @@ public class UserManager {
         
         try {
             
-            String sql = String.format(INSERT_USER_PARTNER_SQL, user.getId(), partnerRecord.getId());
+            String sql = String.format(INSERT_USER_EMBED_SQL, user.getId(), partnerApp.getId());
             jdbc.update(sql);
             
         } catch (Exception ex) {

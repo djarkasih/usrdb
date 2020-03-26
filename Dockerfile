@@ -6,9 +6,13 @@ FROM adoptopenjdk/openjdk13:alpine-jre
 ARG JAR_FILE=target/*.jar
 ARG APP_PORT="8080"
 
-ENV JDBC_URL="jdbc:postgresql://pgsqldb:5432/caudb" \
+ENV JDBC_DATABASE="caudb" \
+    JDBC_HOST="pgsqldb" \
+    JDBC_PORT="5432" \
     JDBC_USER="causradm" \
     JDBC_PASSWORD="c4usr4dmK3y"
+
+ENV JDBC_URL="jdbc:postgresql://${JDBC_HOST}:${JDBC_PORT}/${JDBC_DATABASE}"
 
 COPY ${JAR_FILE} app.jar
 

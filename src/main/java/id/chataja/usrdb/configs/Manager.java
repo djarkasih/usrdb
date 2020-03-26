@@ -5,6 +5,7 @@
  */
 package id.chataja.usrdb.configs;
 
+import id.chataja.usrdb.model.PartnerApp;
 import id.chataja.usrdb.model.PartnerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class Manager {
     
     private final Logger logger = LoggerFactory.getLogger(Manager.class);
-    private final PartnerRecord partnerRecord = new PartnerRecord("admin@umeetme.id","4dm1nK3y");
+    
+    private final PartnerRecord partnerRecord = new PartnerRecord("UMeetMe","admin@umeetme.id");
+    private final PartnerApp partnerApp = new PartnerApp("ShareUserBase");
     
     @Bean
     public Logger getLogger() {
@@ -33,6 +36,11 @@ public class Manager {
         return partnerRecord;
     }
     
+    @Bean
+    public PartnerApp getPartnerApp() {
+        return partnerApp;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

@@ -1,6 +1,7 @@
 package id.chataja.usrdb;
 
 import id.chataja.usrdb.jpa.SqlConstants;
+import id.chataja.usrdb.model.PartnerApp;
 import id.chataja.usrdb.model.PartnerRecord;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @SpringBootApplication
 public class ManagerApplication {
     
+    private final String DEFAULT_PASSWORD = "UMEETME_CLIENT_PASSWORD";
+    private final String DEFAULT_APP_ID = "umeetmeAdm";
+    private final String DEFAULT_APP_SECRET = "umeetmeAdmKey";
+    
     @Autowired
     private Environment env;
 
@@ -33,6 +38,9 @@ public class ManagerApplication {
     @Autowired
     private PartnerRecord partnerRecord;
     
+    @Autowired
+    private PartnerApp partnerApp;
+
     private void createUmeetMePartnerRec(PartnerRecord rec) {
         
         String findSql = String.format(SqlConstants.FIND_PARTNER_SQL, rec.getEmail());
@@ -46,7 +54,7 @@ public class ManagerApplication {
         
         if ((res == null) || (res.isEmpty())) {
             
-            String insertSql = String.format(SqlConstants.INSERT_PARTNER_SQL, rec.getEmail(),passwordEncoder.encode(rec.getDefaultPassword()));
+            String insertSql = String.format(SqlConstants.INSERT_PARTNER_SQL, rec.getName(),rec.getEmail(),passwordEncoder.encode(this.DEFAULT_PASSWORD));
             int numOfRows = jdbc.update(insertSql);
             if (numOfRows == 1) {
                 res = jdbc.queryForMap(findSql);
@@ -66,6 +74,49 @@ public class ManagerApplication {
         
     }
 
+    private void createUmeetMePartnerApp(PartnerApp app) {
+        
+        String findSql = String.format(SqlConstants.FIND_PARTNER_APP_SQL, app.getPartnerId());
+                
+        Map<String, Object> res = null;
+        try {
+            res = jdbc.queryForMap(findSql);
+        } catch (DataAccessException ex) {
+            
+        }
+        
+        if ((res == null) || (res.isEmpty())) {
+            
+            app.setAppId(this.DEFAULT_APP_ID);
+            app.setOtpRequired(false);
+            
+            String insertSql = String.format(
+                SqlConstants.INSERT_PARTNER_APP_SQL, 
+                app.getPartnerId(),
+                app.getAppName(),
+                app.getAppId(),
+                passwordEncoder.encode(this.DEFAULT_APP_SECRET),
+                app.isOtpRequired()
+            );
+            int numOfRows = jdbc.update(insertSql);
+            if (numOfRows == 1) {
+                res = jdbc.queryForMap(findSql);
+            }
+            
+        }
+
+        int id = -1;
+        try {
+            id = Integer.parseInt(res.get("id").toString());
+        } catch (NumberFormatException ex) {
+            
+        }
+        
+        app.setId(id);
+        app.setAppSecret(res.get("app_secret").toString());
+        
+    }
+
     public static void main(String[] args) {
 	SpringApplication.run(ManagerApplication.class, args);
     }
@@ -80,6 +131,10 @@ public class ManagerApplication {
                 
             this.createUmeetMePartnerRec(this.partnerRecord);
             logger.info("partner record : " + this.partnerRecord);
+            
+            this.partnerApp.setPartnerId(this.partnerRecord.getId());
+            this.createUmeetMePartnerApp(partnerApp);
+            logger.info("partner app : " + this.partnerApp);
 
         };
         

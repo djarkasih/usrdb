@@ -20,8 +20,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  */
 public class SecurityInterceptor extends HandlerInterceptorAdapter {
 
-    private final static String TOKEN_PREFIX = "Bearer ";
-    private final static String AUTHORIZATION_HEADER = "Authorization";
+    private final static String APP_ID_HEADER = "AppId";
+    private final static String SECRET_KEY_HEADER = "SecretKey";
     
     private static final Logger logger = LoggerFactory.getLogger(SecurityInterceptor.class);
 
@@ -34,13 +34,15 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest req, HttpServletResponse resp, Object handler) throws Exception {
         
-        String password = "NOPASSWORD";
+        String appId = req.getHeader(SecurityInterceptor.APP_ID_HEADER);
+        if (appId == null)
+            appId = "NOAPPID";
         
-        String headerValue = req.getHeader(SecurityInterceptor.AUTHORIZATION_HEADER);
-        if (headerValue != null)
-            password = headerValue.replace(SecurityInterceptor.TOKEN_PREFIX, "");
-        
-        if (! this.authenticator.authenticate(password)) {
+        String secretKey = req.getHeader(SecurityInterceptor.SECRET_KEY_HEADER);
+        if (appId == null)
+            appId = "NOSECRETKEY";
+
+        if (! this.authenticator.authenticate(appId,secretKey)) {
             throw new UserManagerException(UserManagerError.INVALID_CREDENTIAL,"Invalid or missing credential.");
         }
         

@@ -6,7 +6,7 @@
 package id.chataja.usrdb.service;
 
 import id.chataja.usrdb.jpa.SqlConstants;
-import id.chataja.usrdb.model.PartnerRecord;
+import id.chataja.usrdb.model.PartnerApp;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -24,17 +24,17 @@ public class SimpleAuthenticator {
     private JdbcTemplate jdbc;
 
     @Autowired
-    private PartnerRecord partnerRec;
+    private PartnerApp partnerApp;
     
-    public boolean authenticate(String maskedPassword) {
+    public boolean authenticate(String appId, String secretKey) {
         
-        boolean bOk = maskedPassword.equals(partnerRec.getPassword());
+        boolean bOk = appId.equals(partnerApp.getAppId()) && secretKey.equals(partnerApp.getAppSecret());
         
         if (! bOk) {
             
-            lookupPassword(partnerRec);
+            lookupPartnerApp(partnerApp);
             
-            bOk = maskedPassword.equals(partnerRec.getPassword());
+            bOk = appId.equals(partnerApp.getAppId()) && secretKey.equals(partnerApp.getAppSecret());;
             
         }
         
@@ -42,15 +42,16 @@ public class SimpleAuthenticator {
         
     }
 
-    private void lookupPassword(PartnerRecord rec) {
+    private void lookupPartnerApp(PartnerApp app) {
 
-        String findSql = String.format(SqlConstants.FIND_PARTNER_SQL, rec.getEmail());
+        String findSql = String.format(SqlConstants.FIND_PARTNER_APP_SQL, app.getPartnerId());
                 
         Map<String, Object> res = null;
         try {
             res = jdbc.queryForMap(findSql);
             
-            rec.setPassword(res.get("password_digest").toString());
+            app.setAppId(res.get("app_id").toString());
+            app.setAppSecret(res.get("app_secret").toString());
         } catch (DataAccessException ex) {
             
         }
