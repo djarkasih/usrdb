@@ -6,6 +6,7 @@
 package id.chataja.usrdb.model;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 /**
@@ -18,6 +19,7 @@ public class SimpleUser {
     private String mobileNumber;
     @Size(min=4,message="fullname name should be at least 4 characters long")
     private String fullname;
+    @NotEmpty
     @Email(message = "email Should be a valid email address")
     private String email;
 

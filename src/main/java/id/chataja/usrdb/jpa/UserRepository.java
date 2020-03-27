@@ -14,6 +14,7 @@ import org.springframework.data.repository.Repository;
  */
 public interface UserRepository extends Repository<User,Integer> {
 
+    public boolean existsByEmail(String email);
     public boolean existsByMobileNumber(String mobileNumber);
     public User findByMobileNumber(String mobileNumber);
     public User save(User user);

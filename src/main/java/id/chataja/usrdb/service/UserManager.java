@@ -67,20 +67,28 @@ public class UserManager {
         
     }
     
-    private User saveUser(SimpleUser simpleUser) {
+    private User saveUser(User prevData, SimpleUser simpleUser) {
         
         User user = new User();
         
         user.setMobileNumber(simpleUser.getMobileNumber());
         user.setFullname(simpleUser.getFullname());
-        if (simpleUser.getEmail() != null) {
-            user.setEmail(simpleUser.getEmail());
+        user.setEmail(simpleUser.getEmail());
+        if (prevData == null) {
+            //new user
+            user.setAppId(Rules.CHATAJA_APP_ID);
+            user.setQiscusToken("YOUSHOULDNOTREADTHIS");
+            user.setQiscusEmail(Rules.buildQiscusEmail(user));
+            user.setCreatedAt(LocalDateTime.now());
+        } else {
+            //existing user
+            user.setId(prevData.getId());
+            user.setAppId(prevData.getAppId());
+            user.setQiscusToken(prevData.getQiscusToken());
+            user.setQiscusEmail(prevData.getQiscusEmail());
+            user.setCreatedAt(prevData.getCreatedAt());
         }
-        user.setAppId(Rules.CHATAJA_APP_ID);
-        user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
-        user.setQiscusToken("YOUSHOULDNOTREADTHIS");
-        user.setQiscusEmail(Rules.buildQiscusEmail(user));
 
         User savedUser = null;
         try {
@@ -119,13 +127,28 @@ public class UserManager {
     
     public SimpleUser save(@Valid SimpleUser simpleUser) {
         
+        boolean changeRequired;
+        
         SimpleUser newUser = null;
         
         User user = null;
+        
+        //if the mobile number already listed in chataja db, no change is required
         if (userRepo.existsByMobileNumber(simpleUser.getMobileNumber())) {
             user = userRepo.findByMobileNumber(simpleUser.getMobileNumber());
+            changeRequired = false;
         } else {
-            user = this.saveUser(simpleUser);
+            changeRequired = true;
+        }
+        
+        if (user != null) {
+            //but if either the stored email or fullname is different than what input provided, change is required.
+            changeRequired = (! simpleUser.getEmail().equals(user.getEmail())) ||
+                             (! simpleUser.getFullname().equals(user.getFullname()));
+        }
+        
+        if (changeRequired) {
+            user = this.saveUser(user,simpleUser);
         }
         
         if (user != null) {
